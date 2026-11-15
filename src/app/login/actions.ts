@@ -2,13 +2,12 @@
 
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { homeRouteForRole, isAppRole } from "@/lib/roles";
 import type { LoginState } from "./types";
 
 /**
- * Вход по адресу и паролю.
- *
- * Cookie сеанса записываются на сервере. Сообщение об ошибке общее:
- * оно не раскрывает, существует ли указанный адрес.
+ * Вход по адресу и паролю. Cookie сеанса записываются на сервере.
+ * Сообщение об ошибке общее: оно не раскрывает, существует ли адрес.
  */
 export async function signInAction(
   _previousState: LoginState,
@@ -22,14 +21,19 @@ export async function signInAction(
   }
 
   const supabase = await createSupabaseServerClient();
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
     return { error: "Неверный адрес или пароль. Проверьте данные и повторите вход." };
   }
 
-  // ВРЕМЕННО (этап 3.3): разделы по ролям появятся на этапе 3.4,
-  // поэтому переход выполняется на диагностическую страницу.
-  // На этапе 3.4 эта строка заменяется переходом по ROLE_HOME.
-  redirect("/diag");
+  // Роль читается из профиля тем же клиентом: сеанс уже установлен.
+  const { data: profileRow } = await supabase
+    .from("app_users")
+    .select("role")
+    .eq("user_id", data.user.id)
+    .maybeSingle();
+
+  const role = profileRow?.role;
+  redirect(homeRouteForRole(isAppRole(role) ? role : null));
 }
