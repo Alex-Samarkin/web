@@ -202,3 +202,26 @@ a:hover { text-decoration: underline; }
   margin: 48px auto;
 }
 .auth-card h1 { font-size: var(--font-h2); }
+
+/* Навигация в шапке: белый текст на тёмно-синем фоне */
+.app-header__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-m);
+  flex-wrap: wrap;
+}
+.app-header a { color: #FFFFFF; }
+.app-header__title { text-decoration: none; }
+.app-header .badge {
+  background: rgba(255, 255, 255, 0.18);
+  color: #FFFFFF;
+}
+.app-header .btn--secondary {
+  background: transparent;
+  color: #FFFFFF;
+  border-color: rgba(255, 255, 255, 0.55);
+}
+.app-header .btn--secondary:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
+}
