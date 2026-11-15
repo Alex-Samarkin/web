@@ -1,13 +1,14 @@
 import { redirect } from "next/navigation";
 import { getAuthContext } from "@/lib/auth";
+import { homeRouteForRole } from "@/lib/roles";
 import { LoginForm } from "./login-form";
 
 export const dynamic = "force-dynamic";
 
 export default async function LoginPage() {
-  // Уже вошедший пользователь повторно форму не видит.
+  // Уже вошедший пользователь направляется в свой раздел.
   const context = await getAuthContext();
-  if (context) redirect("/diag"); // этап 3.4 заменит на раздел по роли
+  if (context) redirect(homeRouteForRole(context.profile?.role));
 
   return (
     <main className="container">
